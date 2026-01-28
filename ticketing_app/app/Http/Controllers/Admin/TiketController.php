@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\Tiket;
 class TiketController extends Controller
 {
     /**
@@ -35,10 +35,10 @@ class TiketController extends Controller
             'stok' => 'required|integer|min:0',
         ]);
 
-        // Create the ticket
+        // Create the tickets
         Tiket::create($validatedData);
 
-        return redirect()->route('admin.events.show', $validatedData['event_id'])->with('success', 'Ticket berhasil ditambahkan.');
+        return redirect()->route('admin.events.show', $validatedData['event_id'])->with('success', 'tickets berhasil ditambahkan.');
     }
 
     /**
@@ -62,7 +62,7 @@ class TiketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $ticket = Tiket::findOrFail($id);
+        $tickets = Tiket::findOrFail($id);
 
         $validatedData = $request->validate([
             'tipe' => 'required|string|max:255',
@@ -70,9 +70,9 @@ class TiketController extends Controller
             'stok' => 'required|integer|min:0',
         ]);
 
-        $ticket->update($validatedData);
+        $tickets->update($validatedData);
 
-        return redirect()->route('admin.events.show', $ticket->event_id)->with('success', 'Ticket berhasil diperbarui.');
+        return redirect()->route('admin.events.show', $tickets->event_id)->with('success', 'tickets berhasil diperbarui.');
     }
 
     /**
@@ -80,10 +80,10 @@ class TiketController extends Controller
      */
     public function destroy(string $id)
     {
-        $ticket = Tiket::findOrFail($id);
-        $eventId = $ticket->event_id;
-        $ticket->delete();
+        $tickets = Tiket::findOrFail($id);
+        $eventId = $tickets->event_id;
+        $tickets->delete();
 
-        return redirect()->route('admin.events.show', $eventId)->with('success', 'Ticket berhasil dihapus.');
+        return redirect()->route('admin.events.show', $eventId)->with('success', 'tickets berhasil dihapus.');
     }
 }

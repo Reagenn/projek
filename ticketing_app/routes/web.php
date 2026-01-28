@@ -11,6 +11,7 @@ use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\User\EventController as UserEventController;
 use App\Http\Controllers\User\OrderController;
+use App\Http\Controllers\Admin\TypeticketController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,10 +57,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/histories', [HistoriesController::class, 'index'])->name('histories.index');
         Route::get('/histories/{id}', [HistoriesController::class, 'show'])->name('histories.show');
 
-        
-
         // Payment Type Management
         Route::resource('payment-types', \App\Http\Controllers\Admin\PaymentTypeController::class);
+        Route::resource('typetickets', \App\Http\Controllers\Admin\TypeticketController::class);   
         
     });
 });

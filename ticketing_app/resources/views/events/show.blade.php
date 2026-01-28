@@ -1,5 +1,25 @@
 <x-layouts.app>
   <section class="max-w-7xl mx-auto py-12 px-6">
+    @php
+      // Tentukan URL gambar event dengan fallback yang aman
+      $eventImageUrl = 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp';
+      if (!empty($event->gambar)) {
+        if (filter_var($event->gambar, FILTER_VALIDATE_URL)) {
+          $eventImageUrl = $event->gambar;
+        } elseif (file_exists(public_path('images/events/' . $event->gambar))) {
+          $eventImageUrl = asset('images/events/' . $event->gambar);
+        } else {
+          // Coba dukung path storage jika suatu saat dipakai
+          $publicDisk = \Illuminate\Support\Facades\Storage::disk('public');
+          if ($publicDisk->exists($event->gambar)) {
+            $eventImageUrl = asset('storage/' . ltrim($event->gambar, '/'));
+          } elseif ($publicDisk->exists('events/' . ltrim($event->gambar, '/'))) {
+            $eventImageUrl = asset('storage/events/' . ltrim($event->gambar, '/'));
+          }
+        }
+      }
+    @endphp
+
     <nav class="mb-6">
       <div class="breadcrumbs">
         <ul>
@@ -10,15 +30,17 @@
       </div>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-3 gap-6">
       <!-- Left / Main area -->
-      <div class="lg:col-span-2">
+      <div class="col-span-2">
         <div class="card bg-base-100 shadow">
-          <figure>
-            <img src="{{ $event->gambar
-      ? asset('storage/' . $event->gambar)
-      : 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp'
-  }}" alt="{{ $event->judul }}" class="w-full h-96 object-cover" />
+          <figure class="w-full h-96 object-cover">
+            <img
+              src="{{ $eventImageUrl }}"
+              alt="{{ $event->judul }}"
+              class="w-full h-full object-cover"
+              onerror="this.onerror=null;this.src='https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp';"
+            />
           </figure>
           <div class="card-body">
             <div class="flex justify-between items-start gap-4">
@@ -80,7 +102,7 @@
       </div>
 
       <!-- Right / Summary -->
-      <aside class="lg:col-span-1">
+      <aside class="col-span-1">
         <div class="card sticky top-24 p-4 bg-base-100 shadow">
           <h4 class="font-bold text-lg">Ringkasan Pembelian</h4>
 
@@ -155,10 +177,7 @@
     </dialog>
         </div>
 
-        <div class="modal-action">
-          <button class="btn">Tutup</button>
-          <button type="button" class="btn btn-primary px-4 !bg-blue-900 text-white" id="confirmCheckout">Konfirmasi</button>
-        </div>
+       
       </form>
     </dialog>
 
